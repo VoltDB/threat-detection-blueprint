@@ -1,6 +1,8 @@
 # threat-detection-blueprint - VoltDB Partitioned Client
 
-A VoltDB client demonstrating **real-time threat detection** combining fraud transaction detection with CIDR subnet-based threat detection, using partitioned tables, co-located stored procedures, and TIME_WINDOW materialized views.
+This is the VoltDB component of the threat and fraud detection Blueprint solution presented in this article: TBD, where the full use case as well as the GCP-based architecture are described and a working proof-of-cincept solution is demonstrated.
+
+This GIT repo contains a VoltDB client application that demonstrates **real-time threat detection** combining fraud transaction detection with CIDR subnet-based threat detection, using partitioned tables, co-located stored procedures, and TIME_WINDOW materialized views.
 
 ## Overview
 
@@ -8,7 +10,7 @@ The application assesses two categories of threats:
 1. **Fraud detection** — per-account velocity and spending rules on financial transactions
 2. **Malicious actor detection** — identifies requestors issuing transactions from the same CIDR subnet at high rates (configurable prefix length, default /24)
 
-Every transaction tracks the **source IP** of the requestor. Blocked transactions are recorded in `TRANSACTIONS` with `ACCEPTED=0`, `REASON`, and `RULE_NAME` for analytics export to BigQuery.
+Every transaction tracks the **source IP** of the requestor and is recorded in the `TRANSACTIONS` table for export to BigQuery where further analytics are done. Blocked transactions are recorded with `ACCEPTED=0`, `REASON`, and `RULE_NAME`.
 
 ## Partitioning Strategy
 
