@@ -1,0 +1,20 @@
+{
+  "type": "record",
+  "name": "Transaction",
+  "namespace": "com.example.voltdb.threat",
+  "fields": [
+    {"name": "txn_id", "type": "long"},
+    {"name": "account_id", "type": "long"},
+    {"name": "account_name", "type": ["null", "string"], "default": null},
+    {"name": "txn_time", "type": {"type": "long", "logicalType": "timestamp-micros"}},
+    {"name": "merchant_id", "type": "int"},
+    {"name": "merchant_name", "type": ["null", "string"], "default": null},
+    {"name": "merchant_category", "type": ["null", "string"], "default": null},
+    {"name": "amount", "type": "double"},
+    {"name": "device_id", "type": ["null", "string"], "default": null},
+    {"name": "source_ip", "type": ["null", "string"], "default": null},
+    {"name": "accepted", "type": "int"},
+    {"name": "reason", "type": ["null", "string"], "default": null},
+    {"name": "rule_name", "type": ["null", "string"], "default": null}
+  ]
+}

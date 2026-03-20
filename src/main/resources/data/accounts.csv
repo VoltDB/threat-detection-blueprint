@@ -1,0 +1,6 @@
+account_id,enabled,balance,daily_limit,name,email
+1,1,0.0,10000.0,Alice Johnson,alice@example.com
+2,1,0.0,10000.0,Bob Smith,bob@example.com
+3,1,0.0,5000.0,Charlie Brown,charlie@example.com
+4,0,0.0,10000.0,Diana Prince,diana@example.com
+5,1,0.0,10000.0,Eve Wilson,eve@example.com
