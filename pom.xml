@@ -15,9 +15,9 @@
         <maven.compiler.target>17</maven.compiler.target>
         <voltdb.version>14.3.1</voltdb.version>
         <volt-procedure-api.version>15.0.0</volt-procedure-api.version>
-        <volt-testcontainer.version>1.7.0</volt-testcontainer.version>
+        <volt-testcontainer.version>1.8.0</volt-testcontainer.version>
         <avro.version>1.11.3</avro.version>
-        <google-cloud-pubsub.version>1.125.0</google-cloud-pubsub.version>
+        <google-cloud-pubsub.version>1.149.0</google-cloud-pubsub.version>
         <gcp.project>voltdb-operator</gcp.project>
         <bq.dataset>marina_test</bq.dataset>
         <pubsub.topic.transactions>threat-transactions</pubsub.topic.transactions>
@@ -59,6 +59,12 @@
             <groupId>org.voltdb</groupId>
             <artifactId>volt-testcontainer</artifactId>
             <version>${volt-testcontainer.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.20.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -54,7 +54,12 @@ public class ProcessTransaction extends VoltProcedure {
         "SELECT TXN_COUNT, TOTAL_SPENT FROM TXN_SUMMARY_30SEC " +
         "WHERE ACCOUNT_ID = ? AND WINDOW_30SEC = TIME_WINDOW(SECOND, 30, ?);");
 
-    // Phase 4: Update balance on accepted transaction
+    // Phase 4a: Mark transaction as rejected
+    public final SQLStmt rejectTxn = new SQLStmt(
+        "UPDATE TRANSACTIONS SET ACCEPTED = 0, REASON = ?, RULE_NAME = ? " +
+        "WHERE TXN_ID = ? AND ACCOUNT_ID = ?;");
+
+    // Phase 4b: Update balance on accepted transaction
     public final SQLStmt updateBalance = new SQLStmt(
         "UPDATE ACCOUNTS SET BALANCE = BALANCE + ? WHERE ACCOUNT_ID = ?;");
 
@@ -177,7 +182,7 @@ public class ProcessTransaction extends VoltProcedure {
         // Phase 4: Record result and commit
         // ==========================================
         if (blockReason != null) {
-            // Blocked transaction is already recorded in TRANSACTIONS (ACCEPTED=0)
+            voltQueueSQL(rejectTxn, blockReason, ruleName, txnId, accountId);
             voltExecuteSQL(true);
             return buildResult((byte) 0, blockReason, ruleName);
         }

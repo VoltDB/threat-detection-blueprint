@@ -27,10 +27,10 @@ import java.util.Map;
  * IPs are from MaxMind GeoIP2 example files for correct BigQuery geo enrichment.
  * Available countries: UK, US, Sweden, China, Australia, Singapore, Philippines.
  *
- * Run with: mvn failsafe:integration-test -Dit.test=PubSubPublishIT
+ * Run with: mvn failsafe:integration-test -Dit.test=PubSubPublishRunner
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class PubSubPublishIT extends IntegrationTestBase {
+public class PubSubPublishRunner extends IntegrationTestBase {
 
     private static final String SEED_CSV = "data/seed_transactions.csv";
 
