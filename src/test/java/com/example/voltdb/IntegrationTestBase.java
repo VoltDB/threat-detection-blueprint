@@ -31,8 +31,13 @@ public class IntegrationTestBase {
         }
     }
 
+    public String getImageName() {
+        return props.getProperty("voltdb.image.name",
+            "voltactivedata/volt-developer-edition");
+    }
+
     public String getImageVersion() {
-        return props.getProperty("voltdb.image.version", "14.3.1");
+        return props.getProperty("voltdb.image.version", "14.1.0_voltdb");
     }
 
     public String getTestMode() {
@@ -60,7 +65,7 @@ public class IntegrationTestBase {
     public VoltDBCluster createTestContainer() {
         return new VoltDBCluster(
             getLicensePath(),
-            "voltdb/voltdb-enterprise:" + getImageVersion(),
+            getImageName() + ":" + getImageVersion(),
             getExtraLibDirectory()
         );
     }

@@ -16,12 +16,25 @@
         <voltdb.version>14.3.1</voltdb.version>
         <volt-procedure-api.version>15.0.0</volt-procedure-api.version>
         <volt-testcontainer.version>1.8.0</volt-testcontainer.version>
-        <avro.version>1.11.3</avro.version>
+        <avro.version>1.12.0</avro.version>
+        <jackson.version>2.19.0</jackson.version>
         <google-cloud-pubsub.version>1.149.0</google-cloud-pubsub.version>
         <gcp.project>voltdb-operator</gcp.project>
         <bq.dataset>marina_test</bq.dataset>
         <pubsub.topic.transactions>threat-transactions</pubsub.topic.transactions>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -59,12 +72,6 @@
             <groupId>org.voltdb</groupId>
             <artifactId>volt-testcontainer</artifactId>
             <version>${volt-testcontainer.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>1.20.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
