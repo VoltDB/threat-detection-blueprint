@@ -1,6 +1,6 @@
 # threat-detection-blueprint - VoltDB Partitioned Client
 
-This is the VoltDB component of the threat and fraud detection Blueprint solution presented in this article: TBD, where the full use case as well as the GCP-based architecture are described and a working proof-of-cincept solution is demonstrated.
+This is the VoltDB component of the threat and fraud detection Blueprint solution presented in this article: TBD, where the full use case as well as the GCP-based architecture are described and a working proof-of-concept solution is demonstrated.
 
 This GIT repo contains a VoltDB client application that demonstrates **real-time threat detection** combining fraud transaction detection with CIDR subnet-based threat detection, using partitioned tables, co-located stored procedures, and TIME_WINDOW materialized views.
 
@@ -32,7 +32,7 @@ The schema uses two partition keys for different concerns:
 Fraud rules and subnet counting live on different partitions (ACCOUNT_ID vs SUBNET), so each incoming request is processed in two single-partition calls:
 
 1. **`RecordSubnetRequest`** (partitioned on SUBNET) — inserts the request into `SUBNET_REQUESTS` and returns the current count from the `REQUESTS_PER_SUBNET` materialized view. This call is **not** part of the fraud transaction — it only tracks subnet activity.
-2. **`ProcessTransaction`** (partitioned on ACCOUNT_ID) — a single ACID transaction that validates the account and merchant, inserts the transaction, checks all three threat rules (including the subnet count passed from step 1), and updates the account balance if accepted. All rule evaluation and the accept/reject decision happen atomically inside this transaction.
+2. **`ProcessTransaction`** (partitioned on ACCOUNT_ID) — a single ACID transaction that validates the account and merchant, inserts the transaction as accepted (so materialized views include it), checks all three threat rules (including the subnet count passed from step 1), and if any rule triggers, updates the transaction to `ACCEPTED=0` with the reason. If all rules pass, the account balance is updated. All rule evaluation and the accept/reject decision happen atomically inside this transaction.
 
 ### Materialized Views (TIME_WINDOW)
 
@@ -65,26 +65,50 @@ All rules are evaluated inside `ProcessTransaction`. Rejected transactions are r
 | SearchBlockedByRule | Multi-partition (DDL) | Search blocked transactions by rule name |
 | SearchBlockedByIp | Multi-partition (DDL) | Search blocked transactions by source IP |
 
+## GCP Integration — PubSub and BigQuery
+
+Transaction events are published to **Google Cloud PubSub** in real time for downstream analytics in BigQuery.
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| Publisher | `TransactionPublisher.java` | Publishes each transaction as JSON to PubSub with denormalized account/merchant names |
+| Config | `application.properties` | GCP project, PubSub topic, `sendToPubSub` toggle |
+| Event schema | `avro/transaction.avsc` | Avro schema defining the transaction event format |
+| BigQuery DDL | `bigquery_ddl.sql` | BigQuery table definitions (standard and Iceberg/BigLake) |
+| Seed data runner | `PubSubPublishRunner.java` | Publishes ~467 seed transactions covering all attack scenarios |
+
+To run the seed data publisher against a live GCP project:
+```bash
+mvn failsafe:integration-test -Dit.test=PubSubPublishRunner
+```
+
 ## Prerequisites
 
 - Java 17+
 - Maven 3.6+
 - Docker (running)
-- VoltDB Enterprise license
+- VoltDB Enterprise license (optional — tests default to the free Developer Edition)
 
 ## Build and Test
+
+Tests default to **VoltDB Developer Edition** (`voltactivedata/volt-developer-edition`), which does not require a license. To use Enterprise Edition instead, edit `src/test/resources/test.properties`:
+```properties
+voltdb.image.name=voltdb/voltdb-enterprise
+voltdb.image.version=14.3.1
+```
+and set the license path:
+```bash
+export VOLTDB_LICENSE=~/voltdb-license.xml
+```
 
 ```bash
 # 1. Ensure Docker is running
 docker info
 
-# 2. Set up license
-export VOLTDB_LICENSE=~/voltdb-license.xml
-
-# 3. Build
+# 2. Build
 mvn clean package -DskipTests
 
-# 4. Run tests
+# 3. Run tests
 mvn verify
 ```
 
@@ -112,20 +136,30 @@ threat-detection-blueprint/
 ├── pom.xml
 ├── README.md
 ├── src/main/java/com/example/voltdb/
-│   ├── ThreatDetectionApp.java       # Main client app (two-step flow)
-│   ├── CidrUtils.java                  # CIDR subnet extraction utility
-│   ├── VoltDBSetup.java                 # Idempotent schema deployment
-│   ├── CsvDataLoader.java              # CSV data loading utility
+│   ├── ThreatDetectionApp.java        # Main client app (two-step flow)
+│   ├── TransactionPublisher.java      # PubSub JSON publisher with caching
+│   ├── CidrUtils.java                # CIDR subnet extraction utility
+│   ├── VoltDBSetup.java              # Idempotent schema deployment
+│   ├── CsvDataLoader.java            # CSV data loading utility
 │   └── procedures/
-│       ├── ProcessTransaction.java      # Atomic fraud + subnet detection
-│       └── RecordSubnetRequest.java     # Subnet request counting
+│       ├── ProcessTransaction.java    # Atomic fraud + subnet detection
+│       └── RecordSubnetRequest.java   # Subnet request counting
 ├── src/main/resources/
-│   ├── ddl.sql                          # Tables, views, partitions, procedures
-│   ├── remove_db.sql                    # Drop everything (dependency order)
+│   ├── ddl.sql                        # Tables, views, partitions, procedures
+│   ├── remove_db.sql                  # Drop everything (dependency order)
+│   ├── application.properties         # Runtime config (GCP, VoltDB)
+│   ├── avro/
+│   │   └── transaction.avsc           # Avro schema for transaction events
+│   ├── bigquery_ddl.sql               # BigQuery table definitions
 │   └── data/
-│       ├── accounts.csv                 # Account reference data
-│       └── merchants.csv                # Merchant reference data
-└── src/test/java/com/example/voltdb/
-    ├── IntegrationTestBase.java         # Test infrastructure
-    └── ThreatDetectionIT.java        # Integration tests
+│       ├── accounts.csv               # Account reference data
+│       └── merchants.csv              # Merchant reference data
+├── src/test/java/com/example/voltdb/
+│   ├── IntegrationTestBase.java       # Test infrastructure (testcontainer/external)
+│   ├── ThreatDetectionIT.java         # Integration tests
+│   └── PubSubPublishRunner.java       # Seed data publisher for GCP
+└── src/test/resources/
+    ├── test.properties                # Test config (Docker image, test mode)
+    └── data/
+        └── seed_transactions.csv      # ~467 seed transactions with attack scenarios
 ```
