@@ -81,7 +81,7 @@ public class IntegrationTestBase {
                     "Load classes must pass");
             }
 
-            File schemaFile = extractResourceToTempFile("ddl.sql");
+            File schemaFile = extractResourceToTempFile("voltdb-ddl.sql");
             if (schemaFile != null) {
                 System.out.println("Loading schema from classpath resource: ddl.sql");
                 assertTrue(db.runDDL(schemaFile), "Schema must get loaded");

@@ -19,9 +19,6 @@
         <avro.version>1.12.0</avro.version>
         <jackson.version>2.19.0</jackson.version>
         <google-cloud-pubsub.version>1.149.0</google-cloud-pubsub.version>
-        <gcp.project>voltdb-operator</gcp.project>
-        <bq.dataset>marina_test</bq.dataset>
-        <pubsub.topic.transactions>threat-transactions</pubsub.topic.transactions>
     </properties>
 
     <dependencyManagement>

@@ -32,3 +32,5 @@ voltdb-stored-procedures-maven-quickstart/scripts/test-generated-project/
 /.DS_Store
 .DS_Store
 
+# Local config (contains real project values — do not commit)
+src/main/resources/application.properties
