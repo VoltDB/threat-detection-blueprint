@@ -23,7 +23,7 @@ import java.util.Properties;
 public class ThreatDetectionApp {
 
     private static final int DEFAULT_CIDR_PREFIX = 24;
-    private static final String DEFAULT_GCP_PROJECT = "voltdb-operator";
+    private static final String DEFAULT_GCP_PROJECT = "";
     private static final String DEFAULT_TOPIC = "threat-transactions";
 
     private final Client2 client;

@@ -17,8 +17,9 @@ import java.nio.file.Files;
  */
 public class VoltDBSetup {
 
-    private static final String JAR_PATH = "target/threat-detection-blueprint-1.0-procedures.jar";
-    private static final String DDL_RESOURCE = "ddl.sql";
+    private static final String JAR_PATH = System.getProperty(
+            "procedures.jar.path", "target/threat-detection-blueprint-1.0-procedures.jar");
+    private static final String DDL_RESOURCE = "voltdb-ddl.sql";
 
     private final Client2 client;
 

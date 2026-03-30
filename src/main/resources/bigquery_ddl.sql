@@ -1,9 +1,9 @@
 -- BigQuery DDL for threat detection analytics
--- Dataset: marina_test
+-- Dataset: <your-dataset>
 
-DROP TABLE `marina_test.threat_transactions`;
+DROP TABLE `<your-dataset>.threat_transactions`;
 
-CREATE TABLE IF NOT EXISTS `marina_test.threat_transactions` (
+CREATE TABLE IF NOT EXISTS `<your-dataset>.threat_transactions` (
   txn_id INT64 NOT NULL,
   account_id INT64 NOT NULL,
   account_name STRING,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `marina_test.threat_transactions` (
 --   2. Grant the connection's service account Storage Object Admin on the GCS bucket
 --   3. Update the connection name and storage_uri below
 
-CREATE TABLE IF NOT EXISTS `marina_test.threat_transactions_iceberg` (
+CREATE TABLE IF NOT EXISTS `<your-dataset>.threat_transactions_iceberg` (
   txn_id INT64 NOT NULL,
   account_id INT64 NOT NULL,
   account_name STRING,
@@ -44,5 +44,5 @@ WITH CONNECTION `us-east1.threat-tx-to-iceberg`
 OPTIONS (
   file_format = 'PARQUET',
   table_format = 'ICEBERG',
-  storage_uri = 'gs://mpopova_volt/threat_transactions/'
+  storage_uri = 'gs://<your-gcs-bucket>/threat_transactions/'
 );

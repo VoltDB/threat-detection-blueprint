@@ -1,0 +1,9 @@
+# GCP
+gcp.project=<your-gcp-project>
+bq.dataset=<your-dataset>
+gcs.bucket=<your-gcs-bucket>
+pubsub.topic.transactions=threat-transactions
+sendToPubSub=true
+
+# VoltDB
+voltdb.servers=localhost
