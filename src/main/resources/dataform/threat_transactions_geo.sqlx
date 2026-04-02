@@ -1,0 +1,55 @@
+config {
+  type: "view",
+  description: "Transactions enriched with IP geolocation from MaxMind",
+  schema: "<your-dataset>"
+}
+
+WITH ip_mapped AS (
+  SELECT
+    *,
+    NET.IPV4_TO_INT64(NET.SAFE_IP_FROM_STRING(source_ip)) AS ip_num
+  FROM ${ref("threat_transactions")}
+  WHERE source_ip IS NOT NULL
+),
+geo_matched AS (
+  SELECT
+    t.*,
+    b.geoname_id,
+    b.latitude,
+    b.longitude,
+    b.postal_code,
+    b.accuracy_radius,
+    b.is_anonymous_proxy,
+    b.is_anycast
+  FROM ip_mapped t
+  LEFT JOIN ${ref("geo_ip_blocks")} b
+    ON t.ip_num BETWEEN b.ip_start AND b.ip_end
+)
+SELECT
+  g.txn_id,
+  g.account_id,
+  g.account_name,
+  g.txn_time,
+  g.merchant_id,
+  g.merchant_name,
+  g.merchant_category,
+  g.amount,
+  g.device_id,
+  g.source_ip,
+  g.accepted,
+  g.reason,
+  g.rule_name,
+  l.country_iso_code,
+  l.country_name,
+  l.subdivision_1_name AS region,
+  l.city_name,
+  g.latitude,
+  g.longitude,
+  l.time_zone,
+  g.postal_code,
+  g.is_anonymous_proxy,
+  g.is_anycast
+FROM geo_matched g
+LEFT JOIN ${ref("geo_locations")} l
+  ON g.geoname_id = l.geoname_id
+  
