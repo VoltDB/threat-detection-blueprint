@@ -41,6 +41,9 @@ FILES=(
   "Dockerfile"
   "deploy-cloudrun.sh"
   "src/main/resources/bigquery_ddl.sql"
+  "src/main/resources/dataform/sources.js"
+  "src/main/resources/dataform/geo_ip_blocks.sqlx"
+  "src/main/resources/dataform/threat_transactions_geo.sqlx"
 )
 
 echo "Configuring project with:"

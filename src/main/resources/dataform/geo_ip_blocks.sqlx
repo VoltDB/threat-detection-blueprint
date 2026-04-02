@@ -1,0 +1,27 @@
+config {
+    type: "table",
+    description: "MaxMind City Blocks — CIDR ranges converted to INT64 for range lookups",
+    schema: "<your-dataset>"
+}
+
+SELECT
+  NET.IPV4_TO_INT64(NET.IP_FROM_STRING( SPLIT(network, '/')[
+    OFFSET
+      (0)] )) AS ip_start,
+  NET.IPV4_TO_INT64(NET.IP_FROM_STRING( SPLIT(network, '/')[
+    OFFSET
+      (0)] )) + CAST(POW(2, 32 - CAST(SPLIT(network, '/')[
+      OFFSET
+        (1)] AS INT64)) - 1 AS INT64) AS ip_end,
+  SAFE_CAST(geoname_id AS INT64) AS geoname_id,
+  postal_code,
+  latitude,
+  longitude,
+  accuracy_radius,
+  is_anonymous_proxy,
+  is_anycast
+FROM
+  ${ref("geo_ip_blocks_staging")}
+WHERE
+  network IS NOT NULL
+  AND network != ''

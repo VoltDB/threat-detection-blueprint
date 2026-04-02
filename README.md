@@ -92,12 +92,25 @@ Transaction events are published to **Google Cloud PubSub** in real time for dow
 | Config | `application.properties` | GCP project, PubSub topic, `sendToPubSub` toggle |
 | Event schema | `avro/transaction.avsc` | Avro schema defining the transaction event format |
 | BigQuery DDL | `bigquery_ddl.sql` | BigQuery table definitions (standard and Iceberg/BigLake) |
+| Dataform scripts | `dataform/` | Dataform transformations for IP geolocation enrichment in BigQuery |
 | Seed data runner | `PubSubPublishRunner.java` | Publishes ~467 seed transactions covering all attack scenarios |
 
 To run the seed data publisher against a live GCP project:
 ```bash
 mvn failsafe:integration-test -Dit.test=PubSubPublishRunner
 ```
+
+## Dataform — BigQuery Transformations
+
+The `src/main/resources/dataform/` directory contains [Dataform](https://cloud.google.com/dataform) scripts that transform raw transaction data in BigQuery by enriching it with IP geolocation from MaxMind GeoIP2 City data.
+
+| File | Type | Description |
+|------|------|-------------|
+| `sources.js` | Source declarations | Declares external BigQuery tables (`geo_ip_blocks_staging`, `geo_locations`, `threat_transactions`) as Dataform sources |
+| `geo_ip_blocks.sqlx` | Table | Converts MaxMind CIDR network ranges into INT64 start/end pairs for efficient IP range lookups |
+| `threat_transactions_geo.sqlx` | View | Joins transactions with geo IP blocks and geo locations to produce transactions enriched with country, region, city, coordinates, and proxy/anycast flags |
+
+These scripts use the `<your-dataset>` placeholder for the schema name. Run `./configure.sh` to substitute it with your actual BigQuery dataset (see [Configure Project Properties](#configure-project-properties)).
 
 ## Prerequisites
 
@@ -190,7 +203,7 @@ bq.dataset=my_dataset
 gcs.bucket=my-gcs-bucket
 ```
 
-3. Run the configure script to substitute placeholders across all project files (`Dockerfile`, `deploy-cloudrun.sh`, `bigquery_ddl.sql`):
+3. Run the configure script to substitute placeholders across all project files (`Dockerfile`, `deploy-cloudrun.sh`, `bigquery_ddl.sql`, `dataform/`):
 ```bash
 ./configure.sh
 ```
@@ -426,6 +439,10 @@ threat-detection-blueprint/
 │   ├── avro/
 │   │   └── transaction.avsc           # Avro schema for transaction events
 │   ├── bigquery_ddl.sql               # BigQuery table definitions
+│   ├── dataform/
+│   │   ├── sources.js                 # Dataform source declarations
+│   │   ├── geo_ip_blocks.sqlx         # CIDR-to-INT64 range table
+│   │   └── threat_transactions_geo.sqlx # Geo-enriched transactions view
 │   └── data/
 │       ├── accounts.csv               # Account reference data
 │       └── merchants.csv              # Merchant reference data
