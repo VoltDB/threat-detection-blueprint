@@ -1,6 +1,7 @@
 # threat-detection-blueprint - VoltDB Partitioned Client
 
-This is the VoltDB component of the threat and fraud detection Blueprint solution presented in this article: TBD, where the full use case as well as the GCP-based architecture are described and a working proof-of-concept solution is demonstrated.
+This is the VoltDB component of the threat and fraud detection Blueprint solution presented in this article on Medium:
+https://medium.com/@ppine7all/real-time-fraud-and-geographic-threat-detection-on-google-cloud-platform-c2091ff4daaa, where the full use case as well as the GCP-based architecture are described and a working proof-of-concept solution is demonstrated.
 
 This GIT repo contains a VoltDB client application that demonstrates **real-time threat detection** combining fraud transaction detection with CIDR subnet-based threat detection, using partitioned tables, co-located stored procedures, and TIME_WINDOW materialized views.
 
