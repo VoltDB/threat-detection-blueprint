@@ -125,7 +125,7 @@ These scripts use the `<your-dataset>` placeholder for the schema name. Run `./c
 Tests default to **VoltDB Developer Edition** (`voltactivedata/volt-developer-edition`). A free Developer Edition license can be requested at [voltactivedata.com/build-with-volt](https://www.voltactivedata.com/build-with-volt/). To use Enterprise Edition instead, edit `src/test/resources/test.properties`:
 ```properties
 voltdb.image.name=voltdb/voltdb-enterprise
-voltdb.image.version=14.3.1
+voltdb.image.version=15.2.0
 ```
 Set the license path (either Developer or Enterprise):
 ```bash

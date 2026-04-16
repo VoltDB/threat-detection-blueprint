@@ -60,7 +60,7 @@ public class IntegrationTestBase {
     }
 
     public String getImageVersion() {
-        return props.getProperty("voltdb.image.version", "14.1.0_voltdb");
+        return props.getProperty("voltdb.image.version", "15.2.0_voltdb");
     }
 
     public String getTestMode() {

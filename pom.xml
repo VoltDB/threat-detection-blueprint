@@ -13,8 +13,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <voltdb.version>14.3.1</voltdb.version>
-        <volt-procedure-api.version>15.0.0</volt-procedure-api.version>
+        <voltdb.version>15.2.0</voltdb.version>
+        <volt-procedure-api.version>15.2.0</volt-procedure-api.version>
         <volt-testcontainer.version>1.8.0</volt-testcontainer.version>
         <avro.version>1.12.0</avro.version>
         <jackson.version>2.19.0</jackson.version>
